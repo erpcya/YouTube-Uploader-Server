@@ -1,0 +1,31 @@
+{
+  "name": "youtube-uploader-server",
+  "version": "1.0.0",
+  "description": "YouTube Uploader for media from WebDav",
+  "main": "youtube-uploader.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erpcya/YouTube-Uploader-Server.git"
+  },
+  "author": "Yamel Senih",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/erpcya/YouTube-Uploader-Server/issues"
+  },
+  "homepage": "https://github.com/erpcya/YouTube-Uploader-Server#readme",
+  "dependencies": {
+    "@grpc/proto-loader": "^0.1.0",
+    "async": "^1.5.2",
+    "express": "^4.16.4",
+    "fs": "0.0.1-security",
+    "google-protobuf": "^3.0.0",
+    "grpc": "^1.11.0",
+    "lodash": "^4.6.1",
+    "minimist": "^1.2.0",
+    "python-shell": "^1.0.7",
+    "webdav": "^2.2.1"
+  }
+}
