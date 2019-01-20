@@ -20,6 +20,10 @@ const client = createClient(
         password: process.env.WEBDAV_PSK
     }
 );
+//  Local Database for match uploaded fileData
+var databse = require('node-localdb');
+var media = databse('/tmp/media.json');
+
 //  Default list
 var fileList = [{
   filename: '',
@@ -29,7 +33,8 @@ var fileList = [{
   type: '',
   mime: '',
   title: '',
-  description: ''
+  description: '',
+  keywords: ''
 }];
 
 /**
@@ -94,10 +99,23 @@ function requestFileList(call, callback) {
   client
       .getDirectoryContents(fileName)
       .then(contents => {
+            verifycontents(contents);
             fileList = contents;
             console.log(call.request.clientname + ": List Downloaded");
             callback(null, {fileList});
       });
+}
+
+/**
+* Make a match with DB
+*/
+function verifycontents(contents) {
+  for(var i = 0; i < contents.length; i++) {
+    media.findOne({filename: contents[i].filename}).then(function(u){
+      console.log("Encontrado: " + u);
+    });
+    console.log("Epa: " + contents[i].filename);
+  }
 }
 
 /**

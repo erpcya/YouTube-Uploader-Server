@@ -25,6 +25,7 @@
     "grpc": "^1.11.0",
     "lodash": "^4.6.1",
     "minimist": "^1.2.0",
+    "node-localdb": "0.0.3",
     "python-shell": "^1.0.7",
     "webdav": "^2.2.1"
   }

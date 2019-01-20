@@ -1,10 +1,10 @@
 #!/bin/sh
 echo Runing Server
 #Run Server
-WEBDAV_USER='nextcloud' \
-WEBDAV_PSK='nextcloud' \
-WEBDAV_URL='http://server/remote.php/webdav' \
-WEBDAV_BASE_FOLDER='/media' \
+WEBDAV_USER='medios' \
+WEBDAV_PSK='medios' \
+WEBDAV_URL='http://elcamino/remote.php/webdav' \
+WEBDAV_BASE_FOLDER='/' \
 LOCAL_TMP_DIRECTORY='/tmp' \
 PYTHON_PATH='/usr/bin/python' \
 SCRIPT_PATH='/opt/Apps/Youtube-ERP' \
