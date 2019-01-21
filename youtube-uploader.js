@@ -20,9 +20,6 @@ const client = createClient(
         password: process.env.WEBDAV_PSK
     }
 );
-//  Local Database for match uploaded fileData
-var databse = require('node-localdb');
-var media = databse('/tmp/media.json');
 
 //  Default list
 var fileList = [{
@@ -47,12 +44,15 @@ function requestUpload(call, callback) {
     client
        .getFileContents(call.request.filename)
        .then(contents => {
-        fileSystem.writeFile(process.env.LOCAL_TMP_DIRECTORY + "/" + call.request.basename, contents, (err) => {
+         fileSystem.writeFile(process.env.LOCAL_TMP_DIRECTORY + "/" + call.request.basename, contents, (err) => {
            if (err) {
               console.log(call.request.clientname + ": Error: " + err);
               callback(null, {message: "Error Upload: " + err});
            } else {
              console.log(call.request.clientname + ": The file has been saved!");
+             console.log("Request title: " + call.request.title);
+             console.log("Request description: " + call.request.description);
+             console.log("Request keywords: " + call.request.keywords);
              let options = {
                mode: 'text',
                pythonPath: process.env.PYTHON_PATH,
@@ -99,23 +99,10 @@ function requestFileList(call, callback) {
   client
       .getDirectoryContents(fileName)
       .then(contents => {
-            verifycontents(contents);
             fileList = contents;
             console.log(call.request.clientname + ": List Downloaded");
             callback(null, {fileList});
       });
-}
-
-/**
-* Make a match with DB
-*/
-function verifycontents(contents) {
-  for(var i = 0; i < contents.length; i++) {
-    media.findOne({filename: contents[i].filename}).then(function(u){
-      console.log("Encontrado: " + u);
-    });
-    console.log("Epa: " + contents[i].filename);
-  }
 }
 
 /**
