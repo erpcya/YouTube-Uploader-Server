@@ -65,15 +65,20 @@ function requestUpload(call, callback) {
              //  Keywords
              media.setItem(key + 'keywords', call.request.keywords);
              var sh = require('sh');
-             sh('python ' + process.env.SCRIPT_PATH + '/' + process.env.SCRIPT_NAME
-             + ' --file="' + process.env.LOCAL_TMP_DIRECTORY + '/' + call.request.basename + '"'
-             + ' --title="' + call.request.title + '"'
-             + ' --description="' + call.request.description + '" '
-             + ' --keywords="' + call.request.keywords + '"'
-             + '--category="22"', ' --privacyStatus=private').result(function(output) {
-               console.log(output);
-               callback(null, {message: output});
-             });
+             try {
+               sh('python ' + process.env.SCRIPT_PATH + '/' + process.env.SCRIPT_NAME
+               + ' --file="' + process.env.LOCAL_TMP_DIRECTORY + '/' + call.request.basename + '"'
+               + ' --title="' + call.request.title + '"'
+               + ' --description="' + call.request.description + '" '
+               + ' --keywords="' + call.request.keywords + '"'
+               + '--category="22"', ' --privacyStatus=private').result(function(output) {
+                 console.log("output " + output);
+                 callback(null, {message: output});
+               });
+             } catch(err) {
+               console.log("error " + err);
+               callback(null, {message: err});
+             }
            }
          });
        })
