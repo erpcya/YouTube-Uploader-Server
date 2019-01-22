@@ -20,6 +20,9 @@ const client = createClient(
         password: process.env.WEBDAV_PSK
     }
 );
+//  Simple Storage
+const Store = require('server-store');
+const media = new Store('ERP-YouTube-Uploader-Server','media');
 
 //  Default list
 var fileList = [{
@@ -53,31 +56,23 @@ function requestUpload(call, callback) {
              console.log("Request title: " + call.request.title);
              console.log("Request description: " + call.request.description);
              console.log("Request keywords: " + call.request.keywords);
-             let options = {
-               mode: 'text',
-               pythonPath: process.env.PYTHON_PATH,
-               pythonOptions: ['-u'], // get print results in real-time
-               scriptPath: process.env.SCRIPT_PATH,
-               args: ['--file=' + process.env.LOCAL_TMP_DIRECTORY + '/' + call.request.basename,
-                '--title="' + call.request.title + '"',
-                '--description="' + call.request.description + '"',
-                '--keywords="' + call.request.keywords + '"', '--category="22"', '--privacyStatus=private']
-             };
-             //  Run it
-             PythonShell.run(process.env.SCRIPT_NAME, options, function (err, results) {
-               if (err) {
-                 console.log(call.request.clientname + ": Error: " + err);
-                 callback(null, {message: "Error Upload: " + err});
-               } else {
-                 fileSystem.unlink(process.env.LOCAL_TMP_DIRECTORY + "/" + call.request.basename, contents, (err) => {
-                   if (err) {
-                     console.log(call.request.clientname + ": Error: " + err);
-                     callback(null, {message: "Error Deleting Tmp file: " + err});
-                   } else {
-                     callback(null, {message: "Uploaded"});
-                   }
-                 });
-               }
+
+             let key = call.request.size + '-';
+             //  Title
+             media.setItem(key + 'title', call.request.title);
+             //  Description
+             media.setItem(key + 'description', call.request.description);
+             //  Keywords
+             media.setItem(key + 'keywords', call.request.keywords);
+             var sh = require('sh');
+             sh('python ' + process.env.SCRIPT_PATH + '/' + process.env.SCRIPT_NAME
+             + ' --file="' + process.env.LOCAL_TMP_DIRECTORY + '/' + call.request.basename + '"'
+             + ' --title="' + call.request.title + '"'
+             + ' --description="' + call.request.description + '" '
+             + ' --keywords="' + call.request.keywords + '"'
+             + '--category="22"', ' --privacyStatus=private').result(function(output) {
+               console.log(output);
+               callback(null, {message: output});
              });
            }
          });
@@ -85,6 +80,7 @@ function requestUpload(call, callback) {
        .catch(err => callback(null, {message: err}));
   } else {
     console.log(call.request.clientname + ": Mandatory File Name");
+    callback(null, {message: "Mandatory File Name"});
   }
 }
 
@@ -100,6 +96,21 @@ function requestFileList(call, callback) {
       .getDirectoryContents(fileName)
       .then(contents => {
             fileList = contents;
+            for(var i = 0; i < fileList.length; i++) {
+              var key = fileList[i].size + '-';
+              //  Title
+              var title = media.getItem(key + 'title');
+              console.log('Title ' + title);
+              //  Description
+              var description = media.getItem(key + 'description');
+              console.log('Description ' + description);
+              //  Keywords
+              var keywords = media.getItem(key + 'keywords');
+              console.log('Keywords ' + keywords);
+              fileList[i].title = title;
+              fileList[i].description = description;
+              fileList[i].keywords = keywords;
+            }
             console.log(call.request.clientname + ": List Downloaded");
             callback(null, {fileList});
       });
